@@ -1,8 +1,8 @@
 """
-	Project Computeralgebra: Jeffrey De Fauw (2013-2014)
-	
-	Polynomial time factorization of univariate polynomials 
-	over the integers using LLL lattice reduction.
+    Project Computeralgebra: Jeffrey De Fauw (2013-2014)
+    
+    Polynomial time factorization of univariate polynomials 
+    over the integers using LLL lattice reduction.
 """
 
 
@@ -33,9 +33,9 @@ def hensel_step(f, g, h, s, t, m):
     # f = gh mod m and sg + th = 1 mod m.    
     if not(f.change_ring(old_ring) == g_old*h_old and s_old*g_old + t_old*h_old == 1):
         if not(f.change_ring(old_ring) == g_old*h_old):
-            print "Input conditions not satisfied: f = gh (mod m)."
+            print("Input conditions not satisfied: f = gh (mod m).")
         else:
-            print "Input conditions not satisfied: sg + th = 1 (mod m)."
+            print("Input conditions not satisfied: sg + th = 1 (mod m).")
         return None
 
     # The ring we will lift to: Z/m^2.
@@ -96,10 +96,10 @@ def multi_hensel(f, p, l):
     f_i = []    
     f_i.append(F.unit())    
     for [factor, e] in F:
-		if e > 1:
-			print "f mod p not square-free."
-			break
-		f_i.append(factor.change_ring(ZZ))
+        if e > 1:
+            print("f mod p not square-free.")
+            break
+        f_i.append(factor.change_ring(ZZ))
     
     lc_f = int(f_i[0])  # The leading coefficient.
     r = len(f_i)-1  # Number of factors.
@@ -115,22 +115,22 @@ def multi_hensel(f, p, l):
     k, d = int(r/2), int(log(l, 2)) + 1
     
     # Factor f in f = g_ h_ with:
-	# g_ = lc(f)f_1 * ... * f_k mod p and h_ = f_{k+1} * ... * f_r mod p.
+    # g_ = lc(f)f_1 * ... * f_k mod p and h_ = f_{k+1} * ... * f_r mod p.
     g_ = (lc_f * list_product(f_i[1:k+1])).change_ring(ZZ)
     h_ = (list_product(f_i[k+1:])).change_ring(ZZ)
     
     # Determine the Bezout coefficients.
     d_, s_, t_ = xgcd(g_.change_ring(old_ring), h_.change_ring(old_ring))
     if d_ != 1:
-        print "Not Bezout-coprime!"
+        print("Not Bezout-coprime!")
     else:
         s_ = s_.change_ring(ZZ)
         t_ = t_.change_ring(ZZ)
         
     # Do d consecutive Hensel steps.
-    for j in xrange(1, d+1):
-		m = p^(2^(j-1))
-		g_, h_, s_, t_ = hensel_step(f, g_, h_, s_, t_, m)
+    for j in range(1, d+1):
+        m = p^(2^(j-1))
+        g_, h_, s_, t_ = hensel_step(f, g_, h_, s_, t_, m)
         
     # Recursive on the first factor g_.
     g_factors = multi_hensel(g_, p, l)
@@ -157,7 +157,7 @@ def lll_reduc(f_i):
 
     # Check some input conditions.
     if A.is_square() is False or A.base_ring() is not ZZ or A.det() is 0:
-        print "Check that the input is a non-singular, square matrix over ZZ."
+        print("Check that the input is a non-singular, square matrix over ZZ.")
 
     n = A.dimensions()[0]
 
@@ -212,9 +212,9 @@ def poly_repr(f, m):
        transformed to a polynomial in Z/m[x] but with the symmetric representation for Z/m as 
        {-(m-1)/2, ..., 0, ..., (m-1)/2}, as returned by coefs_repr.
     """    
-    coefs = coefs_repr(f.coeffs(), m)    
+    coefs = coefs_repr(f.coefficients(), m)    
     f_ = 0
-    for i in xrange(len(coefs)):
+    for i in range(len(coefs)):
         f_ += coefs[i]*x^i
     
     return f_
@@ -231,11 +231,11 @@ def factor_lll(f):
     """
     # Check if square-free.
     #if not f.is_squarefree():
-        #print "f not square-free."
+        #print("f not square-free.")
         #return None
     
     # Convert polynomial into coefficient vector.
-    f_v = vector(ZZ, f.coeffs())    
+    f_v = vector(ZZ, f.coefficients())    
     
     A = f_v.norm(Infinity)  # The max norm of the coeffients of f.
 
@@ -264,7 +264,7 @@ def factor_lll(f):
             search = False
          
     l = int(log(2^(n^2/2)*B^(2*n), p)) + 1  # The prime power.
-    print "Prime %i and exponent %i.\n" % (p, l)
+    print("Prime %i and exponent %i.\n" % (p, l))
 
     
     F = f.factor_mod(p)  # Do initial factoring of f over Z/p.
@@ -274,7 +274,7 @@ def factor_lll(f):
     for [factor, e] in F:
         # Check if single factor, else print warning and stop.
         if e > 1:
-            print "Not square-free."
+            print("Not square-free.")
             return None
         # Append the factor with the symmetric represention of Z/p.
         h_i.append(poly_repr(factor.change_ring(ZZ), p))
@@ -289,7 +289,7 @@ def factor_lll(f):
 
     
     r = len(g_i)-1  # Number of modular factors.    
-    T = [i+1 for i in xrange(r)]  # The list of modular factors left.    
+    T = [i+1 for i in range(r)]  # The list of modular factors left.    
     G = []  # Factors in Z[x] found.  
     f_ = f  # Left to factor.
 
@@ -306,7 +306,7 @@ def factor_lll(f):
         # Check if u is already a true factor of f.
         q, r = (b*f_).change_ring(ZZ).quo_rem(u_)         
         if r == 0:
-            print "u=%s is already a factor!" % u_
+            print("u=%s is already a factor!" % u)
             
             # Update the search variables.
             g_ = u_  # Set the true factor u_ as g_ (same notation as in search in lattice).            
@@ -314,7 +314,7 @@ def factor_lll(f):
             
             # If this is the only factor left, add the factor and break.
             if len([jj for jj in T if jj not in S]) == 0:
-                #print "T AND S", T, S
+                #print("T AND S", T, S
                 G.append(g_/g_.content())
                 break
             
@@ -326,7 +326,7 @@ def factor_lll(f):
             
             T = [jj for jj in T if jj not in S]  # Remove the indices in S from T.
             G.append(g_/g_.content())  # The found factor.
-            b = int(f_.coeffs()[-1])  # The lc.        
+            b = int(f_.coefficients()[-1])  # The lc.        
         
         # u is not a true factor, find the irreducible factor of f_ divisible by u mod p^l.
         else:        
@@ -336,13 +336,13 @@ def factor_lll(f):
             # of degree less than l divisible by u modulo p^l. 
             b_break = False  # Boolean used to check if we used break below.
             
-            for j in xrange(d+1, n_+1):
+            for j in range(d+1, n_+1):
                 # The j generators for the lattice.
-                L_gens_ = [(u*x^jj).coeffs() for jj in xrange(j-d)]
-                L_gens_ += [(p^l*x^jj).coeffs() for jj in xrange(d)]
+                L_gens_ = [(u*x^jj).coefficients() for jj in range(j-d)]
+                L_gens_ += [(p^l*x^jj).coefficients() for jj in range(d)]
                 
                 # Extend vectors with zeros to the right dimension.
-                L_gens = [vector(ZZ, gen + [0 for jj in xrange(j-len(gen))]) for gen in L_gens_]
+                L_gens = [vector(ZZ, gen + [0 for jj in range(j-len(gen))]) for gen in L_gens_]
                 
                 # Get short vector from LLL-reduced basis and use the symmetric representation
                 # of Z/p^l for the coefficients (embedded in Z).
@@ -350,7 +350,7 @@ def factor_lll(f):
                 
                 # The corresponding (short) polynomial g_.
                 g_ = 0        
-                for jj in xrange(j):
+                for jj in range(j):
                     g_ += g_v[jj]*x^jj
                 g_ = poly_repr(g_, p^l)  # Symmetric representation Z/p^l.
                     
@@ -361,24 +361,24 @@ def factor_lll(f):
                 h_ = (b*list_product([g_i[jj].change_ring(new_ring) 
                                       for jj in T if jj not in S])).change_ring(ZZ)
                 h_ = poly_repr(h_, p^l)  # Symmetric representation Z/p^l.            
-                h_v = vector(ZZ, coefs_repr(h_.coeffs(), p^l))  # Corresponding coefficient vector for h_.
+                h_v = vector(ZZ, coefs_repr(h_.coefficients(), p^l))  # Corresponding coefficient vector for h_.
                 
                 # Extend the vectors again.
                 d_max = max(len(h_v), len(g_v))  # Max dimension of the two vectors.
-                g_v = vector(ZZ, list(g_v) + [0 for jj in xrange(d_max - len(g_v))]) / g_.content()
-                h_v = vector(ZZ, list(h_v) + [0 for jj in xrange(d_max - len(h_v))]) / h_.content()
+                g_v = vector(ZZ, list(g_v) + [0 for jj in range(d_max - len(g_v))]) / g_.content()
+                h_v = vector(ZZ, list(h_v) + [0 for jj in range(d_max - len(h_v))]) / h_.content()
                 
                 # Mignotte's bound.
                 if g_v.norm(1) * h_v.norm(1) <= B:
                     # Can lift the factorization to Z[x].
-                    #print "Lattice reduction."     
+                    #print("Lattice reduction.")     
                     
                     # Add the irreducible factor of f_.
                     G.append(g_/g_.content())                  
                     # Update the search variables.
                     T = [jj for jj in T if jj not in S]
                     f_ = h_/h_.content()
-                    b = int(f_.coeffs()[-1])
+                    b = int(f_.coefficients()[-1])
                     b_break = True
                     break
             
